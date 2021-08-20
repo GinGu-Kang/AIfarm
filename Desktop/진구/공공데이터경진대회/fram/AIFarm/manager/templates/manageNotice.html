@@ -1,0 +1,122 @@
+{% extends 'manage_base.html'%}
+
+{% block manage_content %}
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-lite.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+       
+    </style>
+    <ol class="breadcrumb">
+        
+        <li class="breadcrumb-item">
+            <a href="{% url 'manager:manage_main' %}">공지사항</a>
+        </li>
+        <li class="breadcrumb-item active">공지사항관리</li>
+    </ol>
+    <div class="col-md-12">
+        <div style="text-align: right;">
+            <button type="button" id="delete-btn" class="btn btn-danger">삭제</button>
+        </div>
+        <table class="table table-hover">
+            <tr>
+                <td>
+                    <input type="checkbox" class="all-check"/>
+                </td>
+                <td>번호</td>
+                <td>제목</td>
+                <td>작성일</td>
+            </tr>
+            {% for notice in notice_list %}
+                <tr>
+                    <td><input type="checkbox" class="check-item" value="{{notice.id}}"/></td>
+                    <td >{{notice.id}}</td>
+                    <td class="notice-item" notice_id="{{notice.id}}">{{notice.title}}</td>
+                    <td>{{notice.datetime|date:'Y.m.d H:i'}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <!--페이지 네이션-->
+        {% if notice_list.paginator.num_pages != 1  %}
+        <div style="text-align: center;">
+            <ul class="pagination">
+                {% if prev > 1%}
+                    <li>
+
+                        <a href="/manager/manageNotice/?page={{prev}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% for i in page_range %}
+                
+                    <li style="margin-left: 10px;"><a href="/manager/manageNotice/?page={{i}}">{{i}} <span class="sr-only">(current)</span></a></li>
+              
+            {% endfor %}
+            {% if next < notice_list.paginator.num_pages%}
+            <li>
+                <a href="/manager/manageNotice/?page={{next}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            </ul>
+            
+        </div>  
+        {% endif %}  
+    </div>
+    <script>
+       $(".all-check").change(function(){
+            console.log("hi");
+            if($(this).is(":checked")){
+                
+                $(".check-item").prop("checked",true);
+            }else{
+                $(".check-item").prop("checked",false);
+            }
+        });
+
+        $(".check-item").change(function(){
+            if(!$(this).is(":checked")){
+                $(".all-check").prop("checked",false);
+            }
+        });
+
+        $(".notice-item").click(function(){
+            var notice_id = $(this).attr("notice_id");
+            location.href="/manager/detailNotice/?notice_id="+notice_id;
+        });
+
+        $("#delete-btn").click(function(){
+            var check_list = [];
+            $(".check-item:checked").each(function(){
+                check_list.push($(this).val());
+            });
+            if(check_list.length > 0){
+                ajax(check_list);
+            }else{
+                alert("삭제 항목을 체크해주세요.")
+            }
+        });
+
+        function ajax(check_list){
+        var data = {'check_list[]' : check_list}
+        $.ajax({
+            url:"/manager/deleteNotice/",
+            type:'POST',
+            data: data,
+            success:function(data){
+               
+                location.reload();
+                alert("삭제되었습니다.");
+
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                
+            }
+        });
+    }
+
+    </script>
+{% endblock %}

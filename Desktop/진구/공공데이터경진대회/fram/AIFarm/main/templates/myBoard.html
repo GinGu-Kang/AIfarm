@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{margin:0; padding:0;}
+        body,html{height:100%;}
+        body{padding-top: 70px;}
+        ul{
+            width:100%;
+
+            background: white;
+            list-style: none;
+        }
+        li{
+            
+            border-bottom:1px solid rgb(210, 210,210);
+        }
+        .item-box{
+            width:91%;
+            height:93px;
+            align-items: center;
+            margin:0 auto;
+            display:flex;
+            flex-direction:row;
+            font-weight: bold;
+
+        }
+        .title{
+            font-size: 18px;;
+        }
+        .date,
+        .hits,
+        .comment,
+        .line{
+            color:#BDBDBD;
+            font-size: 14px;
+        }
+        .li-section1{
+            display: inline-block; 
+            width:48%;
+        }
+        .li-section2{
+            display: inline-block; 
+            width:50%; 
+            text-align: right;
+        }
+        input{
+            width:18px;
+            height:16px;
+        }
+        .pagination > li {
+            display: inline-block;
+        }
+        li:active{
+            background: #D8D8D8;
+        }
+        #delete-btn{
+            display: inline-block;
+            width:57px;
+            height: 28px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 28px;
+        }
+        #empty{
+            width:48%;
+            margin:48% auto;
+            color:rgb(190,190,190);
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="root">
+        <ul>
+        {% if board_list|length > 0 %}
+        
+            <li style="height:70px; width:100%; position: fixed; top:0px; background-color: white;">
+                <div class="item-box" style="height:65px;">
+                    <div style="width:50%; text-align: left;">
+                        <input type="checkbox" id="all-checked"/>
+                        <label style="font-size: 18px;">전체</label>
+                    </div>
+                    <div style="width:50%; text-align: right;">
+                        <span id="delete-btn">삭제</span>
+                    </div>
+                </div>
+            </li>
+        {% for board in board_list %}
+            
+            <li>
+                <div class="item-box">
+                    <div>
+                        <input type="checkbox" value="{{board.id}}" class="item-checked"/>
+                    </div>
+                    <div style="margin-left:2%; width: 100%;" class="list" pk="{{board.id}}">
+                        <span class="title">{{board.title}}</span>
+                        
+                        <br>
+                        <span class="date">{{board.datetime | date:'Y.m.d H:s'}}</span><br>
+                        <span class="hits">
+                            조회수 
+                            <span class="hits-cnt">{{board.hits}}</span>
+                        </span>
+                        <span class="line">|</span>
+                        <span class="comment">
+                            댓글 
+                            <span class="comment-cnt">0</span>
+                        </span>
+                    
+                    </div>
+                </div>
+            </li>
+         {% endfor %}   
+        </ul>
+        <!-- <form id="form" method="POST" style="display: none;">
+            <input type="hidden" name="token" value="{{token}}"/>
+        </form> -->
+        <!--페이지 네이션-->
+        {% include 'pagenation.html' %}
+        {% else %}
+            <h4 id="empty">작성한 글이 없습니다.</h4>
+
+        {% endif %}
+            
+    </div>
+<script>
+    $("#all-checked").change(function(){
+        if($(this).is(":checked")){
+            
+            $(".item-checked").prop("checked",true);
+        }else{
+            $(".item-checked").prop("checked",false);
+        }
+    });
+    $("#delete-btn").click(function(){
+        var check_list = [];
+        $(".item-checked:checked").each(function(){
+            check_list.push($(this).val());
+        });
+        if(check_list.length > 0){
+            ajax(check_list);
+        }else{
+            alert("삭제 항목을 체크해주세요.")
+        }
+    });
+
+    $(".list").click(function(){
+        var id = $(this).attr("pk");
+        android.moveReadBoard(id);
+    });
+
+    function ajax(check_list){
+        var data = {'token':"{{token}}", 'check_list[]' : check_list}
+        $.ajax({
+            url:"/deleteBoard/",
+            type:'POST',
+            data: data,
+            success:function(data){
+                // $(".item-checked:checked").each(function(){
+                //     $(this).closest("li").remove();
+                // });
+                location.reload();
+                alert("삭제되었습니다.");
+
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                
+            }
+        });
+    }
+    
+
+
+
+</script>
+</body>
+</html>

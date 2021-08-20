@@ -1,0 +1,157 @@
+{% load extra %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <style>
+        *{padding:0; margin:0;}
+        body{padding-top: 50px;}
+        #noti-list-box{
+            width:100%;
+            list-style: none;
+            word-break:break-all;
+        }
+        #noti-list-box li{
+            /* margin:0 3%; */
+            width: 100%;
+            margin-left: 3%;
+            
+        }
+        .box:active{
+            background-color: rgb(230,230,230);
+        }
+        .item-box{
+            width:96%;
+            height:24px;
+            align-items: center;
+            margin:0 auto;
+            display:flex;
+            margin:0 auto;
+            flex-direction:row;
+            font-weight: bold;
+            margin-top: 20px;
+
+        }
+        #delete-btn{
+            display: inline-block;
+            width:57px;
+            height: 28px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 28px;
+        }
+    </style>
+</head>
+<body>
+    <ul id="noti-list-box">
+        <li style="height:50px; margin: 0; position: fixed; top:0px; background-color: white;">
+            <div class="item-box">
+                <div style="width:50%; text-align: left;">
+                    <input type="checkbox" id="all-checked"/>
+                    <label style="font-size: 18px;">전체</label>
+                </div>
+                <div style="width:50%; text-align: right;">
+                    <span id="delete-btn">삭제</span>
+                </div>
+            </div>
+        </li>
+        <hr >
+        {% for noti in noti_list %}
+            <div style="display: flex; flex-direction: row; margin: 0 3%;" class="box">
+                <!-- /readBoard/comment_id -->
+                <input type="checkbox" value="{{noti.id}}" class="item-checked" />
+                
+
+                    {% if noti.comment %}
+                        <li class="noti-list comment-list" parent="{{noti.comment|get_parent_board}}" key="{{noti.comment.id}}">
+                        {% if noti.comment.board %}
+                            <b>{{noti.comment.user.name}}님</b>이 게시글에 댓글을 달았습니다.
+                        {% else %}
+                            <b>{{noti.comment.user.name}}님</b>이 댓글에 답글을 달았습니다.
+                        {% endif %}
+                        </li> 
+                    {% else %}
+                        <li class="noti-list message-list" room_id="{{noti.message.room.id}}" username="{{noti.message|get_msg_receive_name:token}}">
+                        <b>{{noti.message.send_user.name}}님</b>이 쪽지를 보냈습니다.  
+                        </li>
+                    {% endif %}
+                    
+                
+                    <p style="width:100px; text-align: right;  color: rgb(190,190,190); margin-top: 10px;">
+                        {{noti.datetime|date:'Y.m.d '}}<br>
+                        {{noti.datetime|date:'H:i'}}
+
+                       
+                    </p>
+                
+            </div>   
+            <hr style="color:rgb(210,210,210)">
+        {% endfor %}
+        
+        <!-- 알람 페이지 새로고침 -->
+        <form action="/notification/" method="POST" style="display: none;" id="reload-form">
+            <input type="hidden" name="token" value="{{token}}"/>
+        </form>
+    </ul>
+    <script>
+        $(".comment-list").click(function(){
+            var comment_id = $(this).attr("key");
+            var parent = $(this).attr("parent");
+            android.moveReadBoard(parent,comment_id);
+
+        });
+        $(".message-list").click(function(){
+            var room_id = $(this).attr("room_id");
+            var username = $(this).attr("username");
+            android.moveReadMessage(room_id,username);            
+        });
+
+        //전체 체크시
+        $("#all-checked").change(function(){
+            if($(this).is(":checked")){
+                $(".item-checked").prop("checked",true);
+            }else{
+                $(".item-checked").prop("checked",false);
+            }
+        });
+        //삭제 버튼 클릭시
+        $("#delete-btn").click(function(){
+            var check_list = [];
+            $(".item-checked:checked").each(function(){
+                check_list.push($(this).val());
+            });
+            if(check_list.length > 0){
+                ajax(check_list);
+            }else{
+                alert("삭제 항목을 체크해주세요.")
+            }
+        });
+        //ajax
+        function ajax(check_list){
+            var data = {'token':"{{token}}", 'check_list[]' : check_list}
+            $.ajax({
+                url:"/deleteNotification/",
+                type:'POST',
+                data: data,
+                success:function(data){
+                    
+                    alert("삭제되었습니다.");
+                    $("#reload-form").submit();
+                },
+                error:function(jqXHR, textStatus, errorThrown){
+                    
+                }
+            });
+         }
+
+    </script>
+</body>
+</html>

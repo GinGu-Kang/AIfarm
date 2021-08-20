@@ -1,0 +1,57 @@
+{% load extra %}
+
+{% for c in comment_list %}
+<div id="{{c.id}}">
+<div class="comment-head">
+    <div>
+        <span style="font-weight: bold; font-size: 14px;">{{c.user.name}}</span>
+        <span style="color:#929292; font-size: 12px;">|</span>
+        <span style="color:#929292; font-size: 12px;">{{c.datetime|date:'Y.m.d H:m'}}</span>
+        {% if token|isLoginComment:c.id%}
+        <span style="color:#929292; font-size: 12px;">|</span>
+        <span style="color:#376AF8;" class="modify-comment" pk="{{c.id}}">수정</span>
+        <span style="color:#376AF8;" class="delete-comment" pk="{{c.id}}">삭제</span>
+        {% endif %}
+    </div>
+    <span style="color:#929292; font-weight: bold;" class="comment-like" pk='{{c.id}}'>
+        <i class="glyphicon glyphicon-thumbs-up" style="font-size: 19px;"></i>
+        <div style="font-size: 10px;" id="comment-like-cnt{{c.id}}">{{c.like_cnt}}</div>
+    </span>
+    
+</div>
+<div class="comment-content">
+    <div style="display: block;" id="comment-label{{c.id}}">{{c.content}}</div>
+    <div class="li-header"  style="display: none;" id="comment-input-box{{c.id}}">
+        <textarea style="text-align: left;" class="input-text" id="comment-input{{c.id}}" rows="2"></textarea>
+        <div style="text-align: right; margin-top: 12px;">
+            <span class="finish-lg-btn finish-modify" pk="{{c.id}}">완료</span>
+        </div>
+    </div>
+    
+</div>
+<div style="margin-top:22px;">
+    
+    <span style="font-size: 15px; color:#929292; margin-right:2%;" class="recomment" unique="{{c.id}}">답글</span>
+    
+    <form id="comment-form{{c.id}}"  style=" width: 88%; height: 30px; display: none;">
+        <textarea class="input-text" rows="2" id="recomment-content{{c.id}}"></textarea>
+        <span id="finish-comment" class="finish-btn" unique="{{c.id}}">완료</span>
+        <br>
+    </form>
+    {% if c.id|get_recomment_cnt > 0%}
+        <span class="all-recomment-btn" isOpen="false" parent_id="{{c.id}}" style="font-size: 15px; color:#929292; width:88%;">
+            <span id="open_recomment_btn{{c.id}}" >전체{{c.id|get_recomment_cnt}}개답글보기</span>
+            <i class="glyphicon glyphicon-chevron-down"></i>
+        </span>
+        
+    {% else %}
+        <span class="all-recomment-btn" isOpen="false" parent_id="{{c.id}}" style="font-size: 15px; color:#929292; width:88%; display: none;">
+            <span id="open_recomment_btn{{c.id}}">전체{{c.id|get_recomment_cnt}}개답글보기</span>
+            <i class="glyphicon glyphicon-chevron-down"></i>
+        </span>
+    {% endif %}
+</div>
+<div id="recomment{{c.id}}" style="margin-left: 5%; display: none;"></div>
+<hr style="width:100%; color:#cfcfcf; margin-top:3%;">
+</div>
+{% endfor %}

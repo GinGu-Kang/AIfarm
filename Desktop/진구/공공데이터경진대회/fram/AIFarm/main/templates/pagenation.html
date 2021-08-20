@@ -1,0 +1,29 @@
+{% if board_list.paginator.num_pages != 1  %}
+        <div style="text-align: center;">
+            <ul class="pagination">
+                {% if prev > 1%}
+                    <li>
+                        <a href="/myBoard/{{prev}}/?token={{token}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% for i in page_range %}
+                {% if page == i %}
+                    <li class="active"><a href="/myBoard/{{i}}/?token={{token}}">{{i}} <span class="sr-only">(current)</span></a></li>
+                {% else %}
+                   <li><a href="/myBoard/{{i}}/?token={{token}}">{{i}} <span class="sr-only">(current)</span></a></li>
+                {% endif %}
+        
+            {% endfor %}
+            {% if next < board_list.paginator.num_pages%}
+            <li>
+                <a href="/myBoard/{{next}}/?token={{token}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            </ul>
+            
+        </div>  
+        {% endif %}    

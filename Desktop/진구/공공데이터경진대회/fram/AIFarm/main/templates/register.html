@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <style>
+        body,html{
+            height: 100%;
+        }
+        
+        
+        .form-box{
+            margin-top:10px;
+        }
+        .radio{
+            display: inline-block;
+            width:15px;
+            height: 15px;
+
+        }
+        .radio-text{
+            font-weight: bold;
+            position: relative;
+            top:-3px;
+            left:5px;
+        }
+        .submit-button{
+            height: 34px;
+            background-color: #007bfc;
+
+            color:white;
+            margin-top:10%;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        #form{
+            position: relative;
+            height: 100%;
+            overflow: auto;
+        }
+        .button{
+            display: inline-block;
+            width:72px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            border:1px solid #007bfc;
+            color:#007bfc;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+<body>
+    {% if is_register %}
+        <script>android.success();</script>
+    {% endif %}
+    
+    <div class="container" style="height: 100%;">
+
+        <form id="form" action="{% url 'main:register'%}" method="POST" onsubmit="return isVaild()">
+            {% csrf_token %}
+            <!--이메일-->
+            <div class="form-box">
+                <label for="email">이메일</label><br>
+                <input type="email" style="width:77%; display: inline-block;"placeholder="이메일" class="form-control" id="email" name="email" required/>
+                <span class="button confirm-btn">이메일인증</span>
+                <div id="auth_box" style="margin-top: 10px; display: none;">
+                    <input type="number" id="auth_number" name="auth_number" placeholder="인증번호를 입력해주세요." style="width:77%; display: inline-block;" class="form-control"/>
+                    <span class="button auth_check">인증</span>
+                </div>
+            </div>
+            <!--비밀번호-->
+            <div class="form-box">
+                <label for="pw1">비밀번호</label>
+                <input type="password" placeholder="비밀번호" class="form-control input_focus" id="pw" name="pw" required/>
+                <p id="pw_msg">
+                    비밀번호는 6자이상 숫자,문자,특수문자 조합입니다.
+                </p>
+            </div>
+            <!--비밀번호 확인-->
+            <div class="form-box">
+                <label for="pw2">비밀번호 확인</label>
+                <input type="password" placeholder="비밀번호 확인" class="form-control input_focus" id="pw2" name="pw2" required/>
+                <p id="pw2_msg" style="color:red; display:none;">비밀번호가 일치하지 않습니다.</p>
+            </div>
+            <!--관심분야-->
+            <div class="form-box">
+                <label for="name">관심분야</label>
+                <select id="category" name="category" class="form-control" class="input-text" style="background: white;" required>
+                    <option value="1">카페</option>
+                    <option value="2">음식점</option>
+                    <option value="3">공예</option>
+                    <option value="4">IT</option>
+                    <option value="5">쇼핑몰</option>
+                    <option value="6">기타</option>
+                    <option value="7">자유게시판</option>
+                    <option value="8">중고물품 판매</option>
+                    <option value="9">마케팅</option>
+                    <option value="10">상권</option>
+                    <option value="11">매출</option>
+                    <option value="12">공모전</option>
+                    <option value="13">팀원모집</option>
+                    <option value="14">경제</option>
+                    <option value="15">기타</option>
+                </select>
+            </div>
+            
+            <!--이름-->
+            <div class="form-box">
+                <label for="name">닉네임</label>
+                <input type="text" placeholder="닉네임" class="form-control" id="name" name="name" required/>
+            </div>
+            <!--전화번호-->
+            <div class="form-box">
+                <label for="phone">전화번호</label>
+                <input type="number" placeholder="'-'구분없이" class="form-control input_focus" id="phone" name="phone" required/>
+                <p id="phone_msg" style="color:red; display:none;"></p>
+            </div>
+            <!--생년월일-->
+            <div class="form-box">
+                <label for="birth_date">생년월일</label><br>
+                <input type="number" maxlength="4" name="birth_year" class="form-control" style="width:22%; display: inline-block;" placeholder="년">
+                <input type="number" maxlength="2" name="birth_mon" class="form-control" style="width:22%; display: inline-block;" placeholder="월">
+                <input type="number" maxlength="2" name="birth_day" class="form-control" style="width:22%; display: inline-block;" placeholder="일">
+
+            </div>
+            
+            <!--성별-->
+            <div class="form-box">
+                <label for="gender">성별</label><br>
+                <input type="radio" value="남성" name="gender" class="form-control radio"/><span class="radio-text">남성</span>
+                <input type="radio" value="여성" name="gender" class="form-control radio" style="margin-left: 20px;"/><span class="radio-text">여성</span>
+            </div>
+            
+            <input type="submit" class="form-control submit-button" value="회원가입">    
+        </form>
+    </div>
+    <script>
+        var pwRule = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{6,}$/;
+        var emailRule = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        var is_checked = false;
+        $(".confirm-btn").click(function(){
+            
+            if(!emailRule.test($("#email").val())){
+                alert("이메일 형식이 올바르지 않습니다.");
+                return;
+            }
+            $("#auth_box").css("display","block");
+            $("#email").attr("readonly",true);
+            $.ajax({
+                type : "GET",
+                url : "/emailCheck?email="+$("#email").val(),
+                success : function(response)
+                {
+                    
+                    if(response['msg']){
+                        
+                        alert(response['msg']);
+                    }
+                    
+                    
+                },
+            });
+            
+        });
+        $(".auth_check").click(function(){
+            if($("#auth_number").val() == ""){
+                alert("인증번호를 입력해주세요.");
+                return;
+            }
+            var data = {'email':$("#email").val() , 'auth_number':$("#auth_number").val()};
+            $.ajax({
+                type : "POST",
+                url : "/checkAuthNumber/",
+                data : data,
+                success : function(response)
+                {
+                    if(response['is_used']){
+                        $("#auth_box").css("display","none");
+                    }
+                    alert(response['msg']);
+                },
+            });
+
+        });
+
+        $(".input_focus").focusout(function(){
+            var attr_name = $(this).attr("name");
+            
+            if(attr_name == "pw"){
+                isPwCheck();
+            }else if(attr_name == "pw2"){
+                isPwEquals();
+            }else if(attr_name == "phone"){
+                isPhoneCheck();
+            } 
+
+        });
+        function isPwCheck(){
+            if(!pwRule.test($("#pw").val())){
+                $("#pw_msg").css('color','red');
+                return false;
+            }else{
+                $("#pw_msg").text("사용가능 합니다.");
+                $("#pw_msg").css('color','green');
+                return true;
+            }
+        }
+        function isPwEquals(){
+            if($("#pw").val() != $("#pw2").val()){
+                $("#pw2_msg").css('display','block');
+                return false;
+            }else{
+                $("#pw2_msg").css('display','none');
+                return true;
+            }
+        }
+        function isPhoneCheck(){
+            if($("#phone").val().length == 0){
+                $("#phone_msg").text("전화번호를 '-' 구분자없이 입력해주세요.");
+                $("#phone_msg").css("display","block");
+                return false;
+            }else if($("#phone").val().length != 11){
+                $("#phone_msg").text("전화번호 형식이 올바르지 않습니다.");
+                $("#phone_msg").css("display","block");
+                return false;
+            }
+            $("#phone_msg").css("display","none");
+            return true;
+        }
+        function isVaild(){
+            if(!is_checked) {
+                alert("'중복확인'버튼 클릭해 주세요.");
+                return false;
+            }
+            if(!isPwCheck()) return false;
+            if(!isPwEquals()) return false;
+            if(!isPhoneCheck()) return false;
+            return true;
+        }
+
+    </script>
+</body>
+</html>

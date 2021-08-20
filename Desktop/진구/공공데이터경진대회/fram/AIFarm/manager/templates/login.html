@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>로그인</title>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!--제이쿼리-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <style>
+         #container{
+             width:500px;
+             margin: 0 auto;
+             margin-top:100px;
+         }
+    </style>
+</head>
+<body>
+    {% if msg %}
+        <script>
+            alert("{{msg}}");
+        </script>
+    {% endif %}
+    <div id="container">
+        <h3 class="text-center">로그인</h3>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label>이메일</label>
+            <input type="text"  class="form-control" name="email" placeholder="이메일을 입력해주세요.">
+            <label>비밀번호</label>
+            <input type="password" class="form-control" name="pw" placeholder="비밀번호를 입력해주세요."><br>
+            <input type="submit" class="form-control" value="로그인">
+        </form>
+    </div>
+</body>
+</html>

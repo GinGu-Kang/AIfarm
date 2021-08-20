@@ -1,0 +1,78 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- jQuery UI CSS 파일 -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+</head>
+<body style="text-align: center;">
+    <br><br>
+    <h5><strong>상세정보</strong></h5>
+    <br><br>
+    <div style="text-align: center;">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td rowspan="3">
+                        <img src="{{ thumbImg }}" width="120" height="150">
+                    </td>
+                    <td><span style="padding-left: 30px; font-size: x-small;"><strong>한글명</strong></span></td>
+                    <td style="font-size: x-small;">{{ sickNameKor }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 30px; font-size: x-small;"><strong>영문명</strong></span></td>
+                    <td style="font-size: x-small;">{{ sickNameEng }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 30px; font-size: x-small;"><strong>작물명</strong></span></td>
+                    <td style="font-size: x-small;">{{ cropName }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table class="table">
+            <tr>
+                <th>병원체명</th>
+                <td style="width: 75%;">{{virusName}}</td>
+            </tr>
+            <tr>
+                <th>발생환경</th>
+                <td id="developmentCondition" style="width: 75%;">{{developmentCondition|safe}}</td>
+            </tr>
+            <tr>
+                <th>증상설명</th>
+                <td style="width: 75%;">{{symptoms|safe}}</td>
+            </tr>
+            <tr>
+                <th>방제방법</th>
+                <td style="width: 75%;">{{preventionMethod|safe}}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- <div>
+        <table class="table">
+            
+        </table>
+    </div> -->
+    <!-- <div>
+        <table class="table">
+            
+        </table>
+    </div>
+    <div>
+        <table class="table">
+            
+        </table>
+    </div> -->
+</body>
+</html>
+<script>
+</script>

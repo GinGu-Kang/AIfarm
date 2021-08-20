@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{padding:0; margin:0;}
+        body,html {height: 100%;}
+        .input-text{
+             width:96%;
+             height:50px;
+             font-size:17px;
+             border:0;
+             border-bottom: 1px solid #D2D2D2;
+             margin-top:4%;
+        }
+        .input-text:focus, #content { outline: none; }
+        [contentEditable=true]:empty:not(:focus):before{
+            content:attr(data-text)
+        
+        }
+        #content{
+            border:0; 
+            width: 96%;
+            margin:0 auto; 
+            text-align:left;
+            margin-top: 4%;
+            font-size: 17px;
+        }
+        #open-gallery{
+            position: fixed;
+            bottom:0px;
+            right:0px;
+            width:50px;
+            height: 50px;
+            margin-bottom: 5%;
+            margin-right: 5%;
+            border-radius: 50px;
+            text-align: center;
+            line-height: 57px;
+            background: #007bf9;
+        }
+        form{
+            width:100%;
+            height: 100%;
+            text-align: center;   
+        }
+        
+    </style>
+</head>
+<body>
+    {% if not isExist %}
+        <script>
+            alert("이메일(아이디)가 존재하지 않습니다.");
+        </script>
+    {% endif %}
+    {% if isWrite %}
+        <script>
+            android.writeFinish("{{room_id}}","{{username}}");
+        </script>
+    {% endif %}
+    <form action="/writeMeassage/" id="form"  method="POST">
+        <input type="hidden" name="token" id="token">
+        <input type="hidden" name="receive_user_id" value="{{username}}"/>
+        <div id="content-box" style="height: 100%;">
+            <div data-text="내용" contentEditable="true" id="content" placeholder="내용">{{content|safe}}</div>
+            <textarea name="content" id="inputContent" style="display: none;"></textarea>
+        </div>
+    </form>
+    
+    <script>
+        $("#content-box").click(function(){
+            $("#content").focus();
+        });
+        //메시지 보내기
+        function send_message(token){
+            $("#token").val(token);
+            $("#inputContent").val($("#content").html());
+            $("#form").submit();
+
+        }
+    </script>
+</body>
+</html>

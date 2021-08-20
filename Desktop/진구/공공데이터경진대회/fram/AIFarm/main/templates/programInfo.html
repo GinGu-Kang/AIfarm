@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{padding:0; margin:0;}
+        header{
+            margin-top: 30px;
+            height: 92px;
+            border-bottom: 1px solid rgb(230,230,230);
+        }
+        .header-txt{
+            margin-left:3%;
+        }
+        ul{
+            list-style: none;
+        }
+
+        li{
+            height:65px;
+            border-bottom: 1px solid rgb(230,230,230);
+            line-height: 65px;
+        }
+        li:active{
+            background-color: rgb(230,230,230);
+        }
+        .li{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h4 class="header-txt">버전정보</h4>
+        <h5 class="header-txt" style="color:rgb(255, 86, 86);">Version 1.0</h5>
+    </header>
+    <ul>
+        <li keyword="useService">
+            <div class="li">
+                <div style="margin-left:3%;">
+                    서비스 이용약관
+                </div>
+                <div style="margin-right: 3%;">
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </div>
+            </div>
+        </li>
+        <li keyword="privacy">
+            <div class="li">
+                <div style="margin-left:3%;">
+                    개인정보 수집
+                </div>
+                <div style="margin-right: 3%;">
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </div>
+            </div>
+            
+        </li>
+    </ul>
+    <script>
+        //약관 클릭시
+        $("li").click(function(){
+            
+            var keyword = $(this).attr("keyword");
+            android.moveForm(keyword);
+        });
+    </script>
+</body>
+</html>

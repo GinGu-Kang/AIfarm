@@ -1,0 +1,53 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .button{
+            display: inline-block;
+            width: 130px;
+            height: 160px;
+            border: 4px solid #A9F5F2;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 13px;
+            text-align: center;
+            line-height: 20px;
+            padding-top: 30px;
+            flex-direction: column;
+            background-color: #E1F5A9;
+        }
+
+        .item-box{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-right: 40px;
+            margin-left: 40px;
+        }
+    </style>
+</head>
+<body style="background-color: #CEF6F5">
+    <div style="text-align: center;">
+        <img src="../static/img/logo_3.png" 
+            style="width: 100%; height: 100%; padding-top: 10%; padding-right: 7%;">
+    </div>
+    <div style="padding-top:-30px; margin-top:unset;">
+        <div class="item-box">
+            
+       <span class="button" onclick="android.sickness_notice()"><img src="https://image.flaticon.com/icons/png/128/3658/3658881.png" style="width: 40%; height: 40%;"><p></p><p>작물진단</p></span>
+       <span class="button" onclick="android.goHomeScreen()"><img src="https://image.flaticon.com/icons/png/128/4839/4839406.png" style="width: 40%; height: 40%;"><p></p><p>커뮤니티</p></span>
+    </div>
+    <div class="item-box">
+        <span class="button" onclick="android.weather()"><img src="https://image.flaticon.com/icons/png/128/578/578116.png" style="width: 40%; height: 40%;"><p></p><p>날씨 예보</p></span>
+        <span class="button" onclick="android.insect()"><img src="https://image.flaticon.com/icons/png/128/1068/1068151.png" style="width: 40%; height: 40%;"><p></p><p>병해충 검색</p></span>
+    </div>
+    </div>
+    
+</body> 
+</html>

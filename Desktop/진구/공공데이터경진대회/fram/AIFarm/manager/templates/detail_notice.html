@@ -1,0 +1,33 @@
+{% extends 'manage_base.html'%}
+{% block manage_content %}
+<ol class="breadcrumb">
+        
+    <li class="breadcrumb-item">
+        <a href="{% url 'manager:manage_main' %}">공지사항</a>
+    </li>
+    <li class="breadcrumb-item active">공지사항</li>
+</ol>
+<div>
+    <h4>{{notice.title}}</h4>
+    <p style="color:rgb(190,190,190);">{{notice.datetime|date:'Y.m.d H:i'}}</p>
+    <hr>
+    <div>
+        {{notice.content|safe}}
+    </div>
+    <hr>
+    <div style="text-align: right;">
+        <button class="btn btn-default" id="modify_notice">수정</button>
+        <button class="btn btn-default" id="delete_notice">삭제</button>
+    </div>
+</div>
+<script>
+    //삭제 버튼 클릭시
+    $("#delete_notice").click(function(){
+        location.href="/manager/deleteNotice/?notice_id={{notice.id}}";
+    });
+    //수정 버튼 클릭시
+    $("#modify_notice").click(function(){   
+        location.href="/manager/modifyNotice/?notice_id={{notice.id}}";
+    });
+</script>
+{% endblock %}

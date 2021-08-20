@@ -1,0 +1,133 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{padding: 0; margin:0;}
+        #search-box{
+            display: flex;
+            flex-direction: row;
+            width:90%;
+            margin: 0 auto;
+            margin-top:30px;
+        }
+        #search-input{
+            width:88%;
+
+        }
+        #search-btn{
+            font-size: 20px;
+            margin:0 auto;
+            margin-top: 5px;
+            color:rgb(190,190,190);
+        }
+        .ul{
+            list-style: none;
+            margin-top: 22px;
+        }
+        .li{
+           display: flex;
+           flex-direction: row;
+           margin:0 3%;
+       }
+       .text-box{
+           display: flex;
+           flex-direction: row;
+           justify-content: space-between;
+           color:rgb(190,190,190);
+           font-size: 12px;
+       }
+       .title{
+        font-size: 14px; 
+        color:black;
+        
+       }
+       #empty{
+            width:55%;
+            margin:48% auto;
+            color:rgb(190,190,190);
+        }
+    </style>
+</head>
+<body>
+    <form action="" id="search-form" method="GET">
+        <div id="search-box">
+            <input class="form-control" type="search" name="keyword" placeholder="검색" id="search-input"/>
+            <i  id="search-btn" class="glyphicon glyphicon-search"></i>
+        </div>
+    </form>
+    {% if board_list|length > 0%}
+    
+    <h5 style="margin-left: 5%; margin-top: 24px;">”&nbsp검색어&nbsp:&nbsp{{keyword}}&nbsp“</h5>
+    <hr>
+    <ul class="ul">
+        {% for board in board_list %}
+        <li class="li" pk="{{board.id}}">
+            <!--이미지-->
+            {% if board.content|get_img_src %}
+            <div><img  src="{{board.content|get_img_src}}" width="60" height="60"></div>
+            {% endif %}
+            <div style="width: 100%; margin-left: 3%;" class="title-box">
+                <div class="text-box">
+                    <p class="title">{{board.title}}</p>
+                    <p class="date" style="text-align: right;">{{board.datetime | date:'Y.m.d H:m' }}</p>
+                </div>    
+                <div class="text-box" style="margin-top:0px;">
+                    <!--좋아요수-->
+                    <p>
+                        <i class="glyphicon glyphicon-thumbs-up"></i>
+                       <span style="margin-left: 3px;">{{board.like_like}}</span>
+                    </p>
+                    <!--댓글수-->    
+                    <p>
+                        <i class="glyphicon glyphicon-comment"></i>
+                        <span style="margin-left: 3px;">{{board|get_comment_cnt}}</span>
+                    </p>
+                </div>
+            </div>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>  
+    {% else %}
+        <h4 id="empty">글,제목으로 검색해주세요</h4>
+    {% endif %}
+
+<script>
+    init();
+        // 쪽지 내용이 overflow 되면 (내용...)
+        function init(){
+            var titleBox = $(".title-box")[0];
+            var date     = $(".date")[0];
+            var width  = $(titleBox).width() - $(date).width();
+            $(".title").css({
+                "width":width+"px",
+                "white-space": "nowrap",
+                "overflow"   : "hidden",
+                "text-overflow": "ellipsis"
+                });
+        }
+    //검색 버튼 클릭시
+    $("#search-btn").click(function(){
+        if($("#search-input").val() != ""){
+            $("#search-form").submit();
+        }else{
+            alert("검색어를 입력해주세요.");
+        }
+        
+    });
+    //게시판 항목 클릭시
+    $(".li").click(function(){
+        var id = $(this).attr("pk");
+        android.moveReadBoard(id);
+    });
+</script>
+    
+</body>
+</html>

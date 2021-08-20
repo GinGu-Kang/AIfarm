@@ -1,0 +1,171 @@
+{% load extra %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- jQuery UI CSS 파일 -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+</head>
+<body style="text-align: center;">
+    <br><br>
+    <h2><strong>날씨 정보</strong></h2>
+    <br><br>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <input type="text" id="testDatepicker" name="testDatepicker" placeholder="날짜를 지정해주세요">
+            <select name="time">
+                <option value="00:00">00:00</option>
+                <option value="01:00">01:00</option>
+                <option value="02:00">02:00</option>
+                <option value="03:00">03:00</option>
+                <option value="04:00">04:00</option>
+                <option value="05:00">05:00</option>
+                <option value="06:00">06:00</option>
+                <option value="07:00">07:00</option>
+                <option value="08:00">08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="12:00">12:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+                <option value="17:00">17:00</option>
+                <option value="18:00">18:00</option>
+                <option value="19:00">19:00</option>
+                <option value="20:00">20:00</option>
+                <option value="21:00">21:00</option>
+                <option value="22:00">22:00</option>
+                <option value="23:00">23:00</option>
+                <option value="24:00">24:00</option>
+            </select>
+            <input type="text" id ="area" name="area" placeholder="지역을 입력해 주세요">
+            <button type="submit">검색</button>
+        </div>
+        <br><br>
+        <div>
+            <img src={{map_img}} style="width: 100%; height: 100%;">
+        </div>
+        <br><br>
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">지역</th>
+                    <th scope="col">날짜/시간</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ area }}</td>
+                        <td>{{ wholeDate }}</td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th scope="col">기온</th>
+                        <th scope="col">최고기온</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ temp }}</td>
+                        <td>{{ max_temp }}</td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th scope="col">최저기온</th>
+                        <th scope="col">습도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ min_temp }}</td>
+                        <td>{{ hum }}</td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th scope="col">풍향</th>
+                        <th scope="col">풍속</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ widdir }}</td>
+                        <td>{{ wind }}</td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr>
+                        <th scope="col">강수량</th>
+                        <th scope="col">토양수분보정값</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ rain }}</td>
+                        <td>{{ soil_wt }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+    
+</body>
+</html>
+
+<script>
+    $(function() {
+        $("#testDatepicker").datepicker({
+            changeMonth: true,
+            dayNames: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+            dayNamesMin: ['월', '화', '수', '목', '금', '토', '일'],
+            monthNamesShort: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dateFormat: 'yy-mm-dd'
+        });
+    });
+    $(document).ready(function() {
+        $( "select[name=month]" ).val( "{{ month_text }}" );
+        $('select[name=month]').change(function () {
+            console.log($('select[name=month]').val());
+            month = $('select[name=month]').val();
+            $('.form').submit();
+        });
+    });
+</script>
+
+
+
+
+
+<!-- <th scope="col">기온</th>
+<th scope="col">최고기온</th> -->
+<!-- <th scope="col">최저기온</th>
+<th scope="col">습도</th> -->
+<!-- <th scope="col">풍향</th>
+<th scope="col">풍속</th> -->
+<!-- <th scope="col">강수량</th>
+<th scope="col">토양수분보정값</th> -->
+
+
+<!-- <td>{{ temp }}</td>
+<td>{{ max_temp }}</td> -->
+<!-- <td>{{ min_temp }}</td>
+<td>{{ hum }}</td>
+<td>{{ widdir }}</td>
+<td>{{ wind }}</td> -->
+<!-- <td>{{ rain }}</td>
+<td>{{ soil_wt }}</td> -->

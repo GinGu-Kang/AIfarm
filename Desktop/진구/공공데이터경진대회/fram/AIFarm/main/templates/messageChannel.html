@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        *{padding:0; margin:0;}
+        ul{
+            list-style: none;
+        }
+        .msg-top{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        li{
+            margin:20px 3%;
+        }
+        hr{
+            border: 0;   
+            height: 1px;
+            background-color: #E6E6E6;         
+        }
+    </style>
+
+
+</head>
+<body>
+    <ul>
+        {% for msg in qs_msg %}
+            <li>
+                <div class="msg-top">
+                    {% if msg.receive_user.user.username == user.user.username %}
+                        <span style="color:rgb(157,195,230);">받은쪽지</span>
+                    {% else %}    
+                        <span style="color:rgb(230,130,74);">보낸쪽지</span>
+                    {% endif %}
+                    <span style="font-size: 14px; color:rgb(210,210,210);">{{msg.datetime|date:'Y.m.d H:m:d'}}</span>
+                </div>
+                <p style="font-size: 14px; margin-top: 5px;">{{msg.content}}</p>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+<script>
+    //전체 삭제 버튼 클릭시 호출
+    function delete_all(room_id){
+        var url = "/deleteRoom/?room_id="+room_id+"&token={{token}}";
+        $.ajax({
+                url:url,
+                type:'GET',
+                success:function(data){
+                    android.deleteFinish();
+                },
+                error:function(jqXHR, textStatus, errorThrown){
+                    
+                }
+            });
+     }
+</script>
+</body>
+</html>

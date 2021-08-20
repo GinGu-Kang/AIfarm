@@ -1,0 +1,168 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+ 
+    <style>
+        *{padding:0; margin: 0;}
+        ul{
+            list-style: none;
+           
+        }
+        li{
+            margin-left: 3%;
+            margin-right: 3%;
+            margin-top: 20px;
+            
+        }
+        .li-header{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .input-text{
+             width: 83%;
+             border:0;
+             border-bottom: 1px solid #929292;
+             height: 100%;
+        }
+        .input-text:focus { outline: none; }
+        .finish-lg-btn{
+            display: inline-block;
+            width:50px;
+            height: 26px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 26px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top:10px;
+        }
+        #empty{
+            width:48%;
+            margin:48% auto;
+            color:rgb(190,190,190);
+            display: none;
+            
+        }
+        
+    </style>
+</head>
+<body>
+    <ul id="comment-list">
+        {% for comment in comment_list %}
+            <li class="{{comment.id}} li" key="{{comment.id}}" parent="{{comment|get_parent_board}}">
+                <div class="li-header">
+                    {% if comment.board %}
+                         <p style="font-weight: bold;">{{comment.board.title}}의댓글:</p>
+                    {% else %}
+                        <p style="font-weight: bold;">{{comment.parent_id|get_comment}}의답글:</p>
+                    {% endif %}
+                    
+                    <div class="dropdown" style="position: relative;">
+                        <i class="glyphicon glyphicon-option-vertical dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false"></i>
+                        
+                        <ul class="dropdown-menu" role="menu"style="position: absolute; left:-148px;">
+                          <li role="presentation"><a role="menuitem" tabindex="-1" class="modify-comment" pk="{{comment.id}}">수정</a></li>
+                          <li role="presentation"><a role="menuitem" tabindex="-1" class="delete-comment" pk="{{comment.id}}">삭제</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <p id="modify-label{{comment.id}}">{{comment.content}}</p>
+                    <div class="li-header" style="display: none;" id="modify-input{{comment.id}}">
+                        
+                        <textarea id="modify{{comment.id}}" style="text-align: left;" class="input-text" rows="2"></textarea>
+                        <div style="text-align: right;">
+                            <span class="finish-lg-btn" pk="{{comment.id}}">완료</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="color:rgb(190,190,190);">{{comment.datetime|date:'Y.m.d H:m'}}</p>
+            </li>
+            <hr class="{{comment.id}}" style="color:rgb(210,210,210);">
+        {% endfor %}
+    </ul>
+    {% if not comment_list %}
+    <h4 id="empty">작성한 댓글이 없습니다.</h4>
+    {% endif %}
+    
+    <script>
+
+        const MODIFY_COMMENT = 0;
+        const DELETE_COMMENT = 1;
+        init();
+        function init(){
+            if($("#comment-list").children("li").length == 0){
+                $("#empty").css("display","block");
+            }else{
+                $("#empty").css("display","none");
+            }
+        };
+
+
+        function ajax(url, datas,sw){
+            
+            $.ajax({
+                url:url,
+                type:'POST',
+                data: datas,
+                success:function(data){
+                    
+                    if(sw == MODIFY_COMMENT){
+                        $("#modify-label"+data['id']).css("display","block");
+                        $("#modify-input"+data['id']).css("display","none");
+                        $("#modify-label"+data['id']).text(data['content']);
+                    }else if(sw == DELETE_COMMENT){
+                        for(var d of data['id']){
+                            $("."+d).remove();
+                        }
+                        init();
+                    
+                    }
+
+                },
+                error:function(jqXHR, textStatus, errorThrown){
+                    
+                }
+            });
+        }
+        $(".modify-comment").click(function(){
+            var id = $(this).attr("pk");
+            $("#modify-label"+id).css("display","none");
+            $("#modify-input"+id).css("display","flex");
+            $("#modify"+id).val($("#modify-label"+id).text());
+        });
+
+        $(".delete-comment").click(function(){
+            var data = {'token':'{{token}}','comment_id':$(this).attr('pk')};
+
+            ajax("/deleteComment/",data,DELETE_COMMENT);
+            
+        });
+
+        $(".finish-lg-btn").click(function(){
+            var id = $(this).attr("pk");
+            var data = {'token':'{{token}}','content':$("#modify"+id).val()};
+            var url = "/modifyComment/"+id+"/";
+            ajax(url,data,MODIFY_COMMENT);
+        });
+
+
+        /*$(".li").click(function(){
+            var parent = $(this).attr("parent");
+            var comment_id = $(this).attr("key");
+            android.moveReadBoard(parent,comment_id);
+        });*/
+    </script>
+</body>
+</html>

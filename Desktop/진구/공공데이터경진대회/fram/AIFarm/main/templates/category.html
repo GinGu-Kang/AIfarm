@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        *{margin:0; padding: 0;}
+        #container{
+            
+            margin-left:3%;
+            margin-right:3%;
+        }
+        .item-box{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button{
+            display: inline-block;
+            width:75px;
+            height:30px;
+            border:1px solid #41719a;
+            font-size: 12px;
+            border-radius: 13px;
+            text-align: center;
+            line-height: 30px;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="container">
+        <h5 style="margin-top: 30px;">분야별 게시판</h4>
+        <div class="item-box">
+            <span class="button" c_id="1">채소</span>
+            <span class="button" c_id="2">과일</span>
+            <span class="button" c_id="3">특수작물</span>
+        </div>
+        <div class="item-box">
+            <span class="button" c_id="4">뿌리</span>
+            <span class="button" c_id="5">줄기</span>
+            <span class="button" c_id="6">기타</span>
+        </div>
+        <h5 style="margin-top: 30px; margin-bottom: 30px;">소통게시판</h4>
+        <div class="item-box">
+            <span class="button" c_id="7">자유게시판</span>
+            <span class="button" c_id="8">공유게시판</span>
+            <span class="button" c_id="9">정부지원</span>
+        </div>
+        <div class="item-box">
+            <span class="button" c_id="10">주말농장</span>
+            <span class="button" c_id="11">작물판매</span>
+            <span class="button" c_id="12">공유농업일지</span>
+        </div>
+        <!-- <div class="item-box">
+            <span class="button" c_id="13">팀원모집</span>
+            <span class="button" c_id="14">경제</span>
+            <span class="button" c_id="15">기타</span>
+        </div> -->
+    </div>
+<script>
+
+    $(".button").click(function(){
+        var c_id =$(this).attr("c_id");
+        android.moveBoardList(c_id);
+
+    });
+</script>
+</body>
+</html>

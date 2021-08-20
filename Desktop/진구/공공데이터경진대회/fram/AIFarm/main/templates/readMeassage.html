@@ -1,0 +1,65 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <style>
+        *{padding: 0; margin: 0;}
+        ul{
+            list-style: none;
+           
+
+        }
+        li{
+            margin:0 3%;
+        }
+        .msg-header{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        {% for msg in qs_msg %}
+            <li style="margin-top: 30px;" href="messageChannel/?room_id={{msg.room.id}}&token={{token}}" username="{{msg.room|get_receive_id:token}}" room_id="{{msg.room.id}}">
+                <div class="msg-header">
+                    <span style="font-weight: bold;">{{msg.room|get_receive_name:token}}</span>
+                    <span style="color:rgb(190,190,190); font-size: 14px;">{{msg.datetime|date:'Y.m.d H:m:d'}}</span>
+                </div>
+                <span class="content" style="color:gray; font-size: 14px;">
+                    {{msg.content}}
+                </span>
+            </li>
+        {% endfor%}
+    </ul>
+    <script>
+        // init();
+        // 쪽지 내용이 overflow 되면 (내용...)
+        // function init(){
+        //     $("li").each(function(index,el){
+        //         var width = $(el).width();
+        //         var length = Math.floor(width/14);
+        //         if($(el).text().length > length){
+        //             var text = $(el).text().substring(0,length-3);
+        //             $(el).text(text+"...");
+        //         }
+
+        //     });
+        // }
+
+        //쪽지 클릭시
+        $("li").click(function(){
+            android.move($(this).attr("room_id"),$(this).attr("username"));
+            
+        });
+
+        
+
+    </script>
+</body>
+</html>

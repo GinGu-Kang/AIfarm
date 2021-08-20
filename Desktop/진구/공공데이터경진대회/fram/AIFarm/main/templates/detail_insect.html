@@ -1,0 +1,71 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- jQuery UI CSS 파일 -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+</head>
+<body style="text-align: center;">
+    <br><br>
+    <h5><strong>상세정보</strong></h5>
+    <br><br>
+    <div style="text-align: center;">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td rowspan="5">
+                        <img src="{{ thumbImg }}" width="120" height="150">
+                    </td>
+                    <td><span style="padding-left: 50px;font-size: xx-small;"><strong>한글명</strong></span></td>
+                    <td style="font-size: x-small;">{{ insectSpeciesKor }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 50px;font-size: xx-small;"><strong>속종명</strong></span></td>
+                    <td style="font-size: x-small;">{{ insectGenus }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 50px;font-size: xx-small;"><strong>목/과명</strong></span></td>
+                    <td style="font-size: x-small;">{{ insectOrder }}/{{ insectFamily }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 50px;font-size: xx-small;"><strong>명명년도</strong></span></td>
+                    <td style="font-size: x-small;">{{ authYear }} </td>
+                </tr>
+                <tr>
+                    <td><span style="padding-left: 50px;font-size: xx-small;"><strong>작물명</strong></span></td>
+                    <td style="font-size: x-small;">{{ cropName }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table class="table">
+            <tr>
+                <th>형태정보</th>
+                <td style="width: 75%;">{{stleInfo|safe}}</td>
+            </tr>
+            <tr>
+                <th>생태정보</th>
+                <td id="developmentCondition" style="width: 75%;">{{ecologyInfo|safe}}</td>
+            </tr>
+            <tr>
+                <th>피해정보</th>
+                <td style="width: 75%;">{{damageInfo|safe}}</td>
+            </tr>
+            <tr>
+                <th>방제방법</th>
+                <td style="width: 75%;">{{preventMethod|safe}}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+<script>
+</script>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{padding:0; margin: 0;}
+        html,body{height:100%;background: white;}
+     
+        form{
+            width:100%;
+            height: 100%;
+            
+            text-align: center;   
+        }
+        .input-text{
+             width:96%;
+             height:50px;
+             font-size:17px;
+             border:0;
+             border-bottom: 1px solid #D2D2D2;
+             margin-top:4%;
+        }
+        .input-text:focus, #content { outline: none; }
+        #open-gallery{
+            position: fixed;
+            bottom:0px;
+            right:0px;
+            width:50px;
+            height: 50px;
+            margin-bottom: 5%;
+            margin-right: 5%;
+            border-radius: 50px;
+            text-align: center;
+            line-height: 57px;
+            background: #007bf9;
+        }
+        #content{
+            border:0; 
+            width: 96%;
+            margin:0 auto; 
+            text-align:left;
+            margin-top: 4%;
+            font-size: 17px;
+        }
+        
+       [contentEditable=true]:empty:not(:focus):before{
+            content:attr(data-text)
+        
+        }
+        img{
+            width:100%;
+            
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if("{{isWrite}}" == "True"){
+            android.writeFinish();
+        }
+    </script>
+    <form id="form"  method="POST">
+        <input id="title" name="title" class="input-text" value="{{board.title}}" type="text" placeholder="제목" required/><br>
+        <select id="category" name="category" class="input-text" style="background: white;" required>
+            <option value="1">채소</option>
+            <option value="2">과일</option>
+            <option value="3">특수작물</option>
+            <option value="4">뿌리</option>
+            <option value="5">줄기</option>
+            <option value="6">기타</option>
+            <option value="7">자유게시판</option>
+            <option value="8">공유게시판</option>
+            <option value="9">정부지원</option>
+            <option value="10">주말농장</option>
+            <option value="11">작물판매</option>
+            <option value="12">공유농업일지</option>
+            {% if category == '16' %}
+            <option value="16" selected>문의게시판</option>
+            {% else %}
+            <option value="16">문의게시판</option>
+            {% endif %}
+        </select>
+        
+        <input type="hidden" id="token" name="token"/>
+        <div id="content-box"style="height:82%;">
+            <div data-text="내용" contentEditable="true"  id="content" placeholder="내용">{% if board %}{{board.content|safe}}{% endif %}</div>
+        </div>
+        <textarea name="content" id="inputContent" style="display: none;"></textarea>
+        
+    </form>
+    <form id="uploadForm" enctype="multipart/form-data" style="display: none;">
+        <input style="display: none;" id="file" type="file" accept="image/*"/>
+    </form>
+    
+    <div id="open-gallery">
+        <i class="glyphicon glyphicon-plus" style="color:white; font-size: 20px;"></i>
+    </div>
+    <script>
+        
+        if("{{board}}")
+            $('#category').val("{{board.category}}").attr("selected",true);
+
+        $("#open-gallery").click(function(){
+            $("#file").click();
+        });
+       /* $("#content-box").click(function(){
+            $("#content").focus();
+        });*/
+        
+
+        //파일 업로드
+        function uploadFile(){
+            var form = $('#uploadForm')[0];
+            var formData = new FormData(form);
+            formData.append("file", $("#file")[0].files[0]);
+            
+            $.ajax({
+                url: '/fileUpload/',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                success: function(result){
+                    console.log(result);
+                    $("#poapo").remove();
+                    var img = $("<img src='"+result['url']+"'><p id='poapo'>&nbsp</p></div><br><br>");
+                    console.log($(img).height());
+                    $("#content").append(img);
+
+                    var sel = window.getSelection();
+                    var edit = document.getElementById("content");
+                    sel.selectAllChildren(edit);
+                    sel.collapseToEnd();
+                    location.href="#poapo";
+                    $("#content").focus();
+
+                    $("#file").val("");
+                    
+                }
+            });
+        }    
+        $('#file').change(function(e){
+            console.log(e);
+            uploadFile();
+        });
+
+        $("#content-box").click(function(){
+            $("#content").focus();
+        });
+        
+        function saveTemp(){
+            var title    = $("#title").val();
+            var category = $("#category option:selected").val();
+            var content  = $("#content").html();
+            android.saveTemp(title,category,content);
+            
+        }
+        function displayTempBoard(msg){
+            var arr = msg.split("&*,*&");
+
+            $("#title").val(arr[0]);
+            $('#category').val(arr[1]).attr("selected",true);
+            $("#content").html(arr[2]);
+        }
+        
+
+        function valid(msg){
+            var arr = msg.split("&*,*&");
+            $("#token").val(arr[0]);
+            $("#inputContent").val($("#content").html());   
+            if($("#title").val() == ""){
+                alert("제목을 입력해주제요.");
+            }else if($("#category option:selected").length == 0){
+                alert("카테고리를 선택해주세요.");
+            }else if($("#inputContent").val() == ""){
+                alert("내용을 입력해주세요.");
+            }else{
+                $("#form").attr("action",arr[1])
+                $("#form").submit();
+            }
+        
+            
+            
+
+        }
+
+        function select(){
+            var char = 4, sel; // character at which to place caret
+            
+                if (document.selection) {
+                sel = document.selection.createRange();
+                sel.moveStart('character', char);
+                sel.select();
+                }
+                else {
+                    sel = window.getSelection();
+                    sel.collapse(content.firstChild, char);
+                }
+                // $("#content").focus();
+            }
+ 
+    </script>
+
+    <!-- <script>
+        $(function(){
+        
+        });
+    </script> -->
+</body>
+</html>

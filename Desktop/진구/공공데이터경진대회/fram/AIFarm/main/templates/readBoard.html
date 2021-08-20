@@ -1,0 +1,368 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <style> 
+        *{padding: 0; margin: 0;}
+        .top-box{
+            color:#929292;
+
+        }
+        .span-bar{
+            display: inline-block;
+            width:2%;
+            text-align: center;
+        }
+        header,#content{
+            margin-left: 3%;
+            margin-top: 3%;
+            margin-right: 3%;
+            
+        }
+       #content{
+           font-size: 18px;
+       }
+       img{
+           width:100%;
+       }
+       #comment-box{
+           width:92%;
+           margin: 0 auto;
+       }
+       .comment-head{
+           display: flex;
+           flex-direction: row;
+           justify-content: space-between;
+           align-items: center;
+           margin-top: 3%;
+       }
+       .comment-content{
+           margin-top:1%;
+           font-size: 15px;
+       }
+       .input-text{
+             width: 83%;
+             border:0;
+             border-bottom: 1px solid #929292;
+             height: 100%;
+        }
+        .input-text:focus { outline: none; }
+        .finish-btn{
+            display: inline-block;
+            width:43px;
+            height: 23px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 23px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .finish-lg-btn{
+            display: inline-block;
+            width:50px;
+            height: 26px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 26px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .li-header{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .button{
+            display: inline-block;
+            width:57px;
+            height: 28px;
+            text-align: center;
+            border:1px solid #BDBDBD;
+            border-radius: 20px;
+            line-height: 28px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 5%;">
+        <header>
+            <div style="font-size: 18px; font-weight: bold;">{{board.title}}</div>
+            <div class="top-box" style="margin-top: 2%;">
+                <span>{{board.user.name}}</span>
+                <span class="span-bar" style="width:7%;">|</span>
+                <span>{{board.datetime | date:'Y.m.d H:m' }}</span>
+            </div>
+            <div class="top-box">
+                <span>조회수<span style="margin-left:1%;">{{board.hits}}</span></span>
+                <span class="span-bar">|</span>
+                <span>
+                    좋아요
+                    <span class="board_like_cnt" style="margin-left:1%;">{{board.like_like}}</span>
+                </span>
+            </div>
+        </header>
+        <hr style="width:100%; color:#cfcfcf; margin-top:3%;">
+        <div id="content">
+            {{board.content|safe}}
+        </div>
+        {% if token %}
+            
+            <div style="text-align: right; margin-right: 3%; margin-top: 5%;">
+            {% if not token|isLogin:board.id %}
+            <span id="message" class="button"><i class="glyphicon glyphicon-envelope"></i>쪽지</span>
+            {% endif %}
+            {% if token|isLogin:board.id %}
+                
+                    <button class="button" id="delete">삭제</button>
+                    <button class="button" id="modify">수정</button>
+                
+                <form action="/modifyBoard/" method="POST" style="display: none;">
+                    <input type="hidden" name="token" value="{{token}}">
+                    <input type="hidden" name="board_id" value="{{board.id}}">
+                </form>
+            {% endif %}
+            </div>
+        {% endif %}
+        {% if not board.category == '16' %}
+        <hr style="width:100%; color:#cfcfcf; margin-top:3%;">
+        <h3 style="text-align: center; color:#929292;" id="board-like">
+            <i class="glyphicon glyphicon-thumbs-up"></i>
+            <div style="font-size: 13px;" class="board_like_cnt">{{board.like_like}}</div>
+        </h3>
+        <hr style="width:100%; color:#cfcfcf; margin-top:3%;">
+        {% endif %}
+        <!--댓글-->
+        <div id="comment-box">
+            <!--댓글추가-->
+            {% if token %}
+            <textarea id="write-comment" class="input-text" placeholder="댓글추가..." rows="2" style="width:100%;"></textarea>
+            {% else %}
+            <textarea id="write-comment" class="input-text" placeholder="로그인 해주세요..." rows="2" style="width:100%;"></textarea>
+            {% endif %}
+            <div style="text-align: right;">
+                <span class="finish-lg-btn" id="write-comment-btn">완료</span>
+            </div>
+            <div id="comment-list" style="margin-top:6%;">
+                {% include 'comment.html' %}
+            </div>
+            
+        </div>
+        <form action="/readBoard/{{board.id}}/" id="read_board" method="POST" style="display: none;">
+            <input type="hidden" id="read_board_token" name="token" value="{{token}}">
+        </form>
+        <form id="del-finish-form" method="POST">
+            <input type="hidden"  name="token" value="{{token}}">
+        </form>
+            
+    </div>    
+    <script>
+        
+        const READ_RECOMMENT  = 0;
+        const WRITE_COMMENT   = 1;
+        const WRITE_RECOMMENT = 2;
+        const BOARD_LIKE      = 3;
+        const COMMENT_LIKE    = 4;
+        const DELETE_BOARD    = 5;
+        const MODIFY_COMMENT  = 6;
+        const DELETE_COMMENT  = 7;
+        $("#modify").click(function(){
+            // $("#form").submit();
+            android.modify("{{board.id}}");
+        });
+        $(document).ready(function(){
+            init();
+        });
+            
+        $("#message").click(function(){
+            android.writeMeassage("{{board.user.user.username}}");
+        
+        });
+        
+       
+
+        function init(){
+            if($("#{{noti_comment_id}}").length!=0){
+                location.href="#{{noti_comment_id}}";
+            }else{
+                console.log("hihihi");
+                
+                $("#open_recomment_btn{{noti_comment_id|get_parent_id}}").parent("span").click();
+            }
+            
+        }
+
+        function finish(){
+            $("#read_board").submit();
+        }
+        $("#write-comment-btn").click(function(){
+            var content = $("#write-comment").val();
+            $("#write-comment").val("");
+            var data = {'token':'{{token}}','board_id':'{{board.id}}','content':content};
+            ajax("/writeComment/",data,WRITE_COMMENT);
+        });
+
+
+        function ajax(url, datas,sw){
+            
+            $.ajax({
+                url:url,
+                type:'POST',
+                data: datas,
+                success:function(data){
+                    
+                    if(sw == READ_RECOMMENT){
+
+                        $("#open_recomment_btn"+datas['parent_id']).parent("span").css("display","inline");
+                        $("#open_recomment_btn"+datas['parent_id']).parent("span").attr("isOpen","true");
+                        // $("#open_recomment_btn"+datas['parent_id']).attr("open","true");
+                        
+                        $("#recomment"+datas['parent_id']).empty();
+                        $("#recomment"+datas['parent_id']).css("display","block");
+                        $("#recomment"+datas['parent_id']).append(data);
+                        $("#comment-form"+datas['parent_id']).css("display","none");
+                        location.href="#{{noti_comment_id}}";
+                        
+                        var recomment_cnt = $("#recomment_cnt"+datas['parent_id']).val();
+                        
+                        $("#open_recomment_btn"+datas['parent_id']).text('전체'+recomment_cnt+'개답글보기');
+                    }else if(sw == WRITE_COMMENT){
+                        $("#comment-list").empty();
+                        $("#comment-list").append(data);
+                    }else if(sw == WRITE_RECOMMENT){
+                        var data = {'parent_id':datas['parent_id']};
+                        ajax("/readRecomment/",data,READ_RECOMMENT);
+                    }else if(sw == BOARD_LIKE){
+                        
+                        $(".board_like_cnt").text(data['board_like_cnt']);
+                    }else if(sw == COMMENT_LIKE){
+                        $("#comment-like-cnt"+data['comment_id']).text(data['comment_like_cnt']);
+                    }else if(sw == DELETE_BOARD){
+                        // alert(data['msg']);
+                        if(data['msg']){
+                            // location.href = "/myBoard/1/?token="+data['token'];
+                            android.deleteFinish();
+                        }
+                        
+                    }else if(sw == MODIFY_COMMENT){
+                        $("#comment-label"+data['id']).css("display","block");
+                        $("#comment-input-box"+data['id']).css("display","none");
+                        $("#comment-label"+data['id']).text(data['content']);
+
+                    }else if(sw == DELETE_COMMENT){
+                        for(var d of data['id']){
+                            $("#"+d).remove();
+                        }
+                        console.log(data['parent_id']);
+                        var cnt = $("#recomment"+data['parent_id']).children().length;
+                        if( cnt-1 != 0){
+                            $("#open_recomment_btn"+data['parent_id']).text("전체"+(cnt-1)+"개답글보기");
+                        }else{
+                            $("#open_recomment_btn"+data['parent_id']).css("display","none");
+                        }
+                        
+                    }
+
+                    
+
+                },
+                error:function(jqXHR, textStatus, errorThrown){
+                    
+                }
+            });
+        }
+        $("#delete").click(function(){
+            var data = {'token':'{{token}}','check_list[]':'{{board.id}}'};
+            ajax('/deleteBoard/',data,DELETE_BOARD);
+        });
+        //게시판
+        $("#board-like").click(function(){
+            var data = {'token':'{{token}}','board_id':'{{board.id}}'};
+            if(android.loginCheck()){
+                ajax("/like/board/",data,BOARD_LIKE);
+            }
+        });
+        //답글 버튼 클릭시
+        
+        $(document).on("click",".recomment",function(){
+            
+            if(android.loginCheck()){
+                var unique = $(this).attr("unique");
+                $("#comment-form"+unique).css("display","inline-block");
+            }
+            
+
+        });
+        //답글 작성 완료 버튼 클릭시
+        
+        $(document).on("click",".finish-btn",function(){
+            var unique = $(this).attr("unique");
+            var content = $("#recomment-content"+unique).val();
+            $("#recomment-content"+unique).val("");
+            var data = {'token':'{{token}}','parent_id':unique,'content':content};
+
+            ajax("/writeComment/",data,WRITE_RECOMMENT);
+
+        });
+        //전체 달글 가져오기
+        
+        $(document).on("click",".all-recomment-btn",function(){
+            var parent_id = $(this).attr("parent_id");
+            var isOpen = $(this).attr("isOpen");
+            if(isOpen == 'false'){
+                var data = {'parent_id':parent_id};
+                ajax("/readRecomment/",data,READ_RECOMMENT);
+                $(this).attr("isOpen","true");
+            }else{
+                $(this).attr("isOpen","false");
+                $("#recomment"+parent_id).css("display","none");
+
+            }
+            
+        });
+
+        //댓글 좋아요 클릭시
+        $(document).on("click",".comment-like",function(){
+            var comment_id = $(this).attr("pk");
+            if(android.loginCheck()){
+                var data = {'token':'{{token}}','comment_id':comment_id};
+                ajax('/like/comment/',data,COMMENT_LIKE);
+            }
+            
+        });
+        $(document).on("focusin","#write-comment",function(){
+            android.loginCheck();
+        });
+        //댓글 수정 버튼클릭시
+        $(document).on("click",".modify-comment",function(){
+            var id = $(this).attr('pk');
+            $("#comment-label"+id).css("display","none");
+            $("#comment-input-box"+id).css("display","flex");
+            $("#comment-input"+id).val($("#comment-label"+id).text());
+        });
+        // 댓글 수정 완료
+        $(document).on("click",".finish-modify",function(){
+            var id = $(this).attr("pk");
+            var data = {'token':'{{token}}','content':$("#comment-input"+id).val()};
+            var url = "/modifyComment/"+id+"/";
+            ajax(url,data,MODIFY_COMMENT);
+        });
+
+        // 댓글 삭제
+        $(document).on("click",".delete-comment",function(){
+            var data = {'token':'{{token}}','comment_id':$(this).attr('pk')};
+            ajax("/deleteComment/",data,DELETE_COMMENT);
+
+        });
+    </script>
+</body>
+</html>

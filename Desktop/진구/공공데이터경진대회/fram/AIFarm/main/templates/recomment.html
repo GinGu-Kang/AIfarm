@@ -1,0 +1,29 @@
+{% load extra %}
+<input type="hidden" id="recomment_cnt{{parent_id}}" value="{{comment_list|length}}"/>
+{% for c in comment_list %}
+<div id="{{c.id}}">
+<div class="comment-head">
+    <div>
+        <span style="font-weight: bold; font-size: 14px;">{{c.user.name}}</span>
+        <span style="color:#929292; font-size: 12px;">|</span>
+        <span style="color:#929292; font-size: 12px;">{{c.datetime|date:'Y.m.d H:m'}}</span>
+        <span style="color:#929292; font-size: 12px;">|</span>
+        <span style="color:#376AF8;" class="modify-comment" pk="{{c.id}}">수정</span>
+        <span style="color:#376AF8;" class="delete-comment" pk="{{c.id}}">삭제</span>
+    </div>
+    <span style="color:#929292; font-weight: bold;" class="comment-like" pk='{{c.id}}'>
+        <i class="glyphicon glyphicon-thumbs-up" style="font-size: 19px;"></i>
+        <div style="font-size: 10px;" id="comment-like-cnt{{c.id}}">{{c.like_cnt}}</div>
+    </span>
+</div>
+<div class="comment-content">
+    <div style="display: block;" id="comment-label{{c.id}}">{{c.content}}</div>
+    <div class="li-header"  style="display: none;" id="comment-input-box{{c.id}}">
+        <textarea style="text-align: left;" class="input-text" id="comment-input{{c.id}}" rows="2"></textarea>
+        <div style="text-align: right; margin-top: 12px;">
+            <span class="finish-lg-btn finish-modify" pk="{{c.id}}">완료</span>
+        </div>
+    </div>
+</div>
+</div>
+{% endfor %}

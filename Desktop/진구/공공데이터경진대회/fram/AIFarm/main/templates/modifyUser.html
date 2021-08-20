@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        .form-box{
+            width:83%;
+            margin:0 auto;
+            margin-top:10px;
+
+        }
+
+        .submit-button{
+            height: 34px;
+            background-color: #007bfc;
+
+            color:white;
+            margin-top:10%;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .radio{
+            display: inline-block;
+            width:15px;
+            height: 15px;
+
+        }
+        .radio-text{
+            font-weight: bold;
+            position: relative;
+            top:-3px;
+            left:5px;
+        }
+
+    </style>
+</head>
+<body>
+    {% if isChangePw %}
+        <script>
+            android.logout();
+        </script>
+    {% endif %}
+    <form id="form" action="/modifyUser/?token={{token}}" method="POST" onsubmit="return isVaild()">
+        <!--비밀번호-->
+        <div class="form-box">
+            <label for="pw1">비밀번호</label>
+            <input type="password" placeholder="비밀번호" class="form-control input_focus" id="pw" name="pw"  />
+            <p id="pw_msg" style="font-size: 12px;">
+                비밀번호는 6자이상 숫자,문자,특수문자 조합입니다.
+            </p>
+        </div>
+        <!--비밀번호 확인-->
+        <div class="form-box">
+            <label for="pw2">비밀번호 확인</label>
+            <input type="password" placeholder="비밀번호 확인" class="form-control input_focus" id="pw2"  />
+            <p id="pw2_msg" style="color:red; display:none;">비밀번호가 일치하지 않습니다.</p>
+        </div>
+        <!--닉네임-->
+        <div class="form-box">
+            <label for="name">닉네임</label>
+            <input type="text" placeholder="닉네임" value="{{user.name}}" class="form-control" id="name" name="name"  />
+        </div>
+        <!--전화번호-->
+        <div class="form-box">
+            <label for="phone">전화번호</label>
+            <input type="number" placeholder="'-'구분없이" value="{{user.phone}}" class="form-control input_focus" id="phone" name="phone"  />
+            <p id="phone_msg" style="color:red; display:none;"></p>
+        </div>
+        <!--관심분야-->
+        <div class="form-box">
+            <label for="name">관심분야</label>
+            <select id="category" name="category" class="form-control" class="input-text" style="background: white;"  >
+                
+                <option value="1">카페</option>
+                <option value="2">음식점</option>
+                <option value="3">공예</option>
+                <option value="4">IT</option>
+                <option value="5">쇼핑몰</option>
+                <option value="6">기타</option>
+                <option value="7">자유게시판</option>
+                <option value="8">중고물품 판매</option>
+                <option value="9">마케팅</option>
+                <option value="10">상권</option>
+                <option value="11">매출</option>
+                <option value="12">공모전</option>
+                <option value="13">팀원모집</option>
+                <option value="14">경제</option>
+                <option value="15">기타</option>
+            </select>
+        </div>
+        <!--생년월일-->
+        <div class="form-box">
+            <label for="birth_date">생년월일</label><br>
+            <input type="number" maxlength="4" name="birth_year" id="birth_year" class="form-control birth" style="width:22%; display: inline-block;" placeholder="년">
+            <input type="number" maxlength="2" name="birth_mon"  id="birth_mon" class="form-control birth" style="width:22%; display: inline-block;" placeholder="월">
+            <input type="number" maxlength="2" name="birth_day"  id="birth_day" class="form-control birth" style="width:22%; display: inline-block;" placeholder="일">
+
+        </div>
+        <!--성별-->
+        <div class="form-box">
+            <label for="gender">성별</label><br>
+            <input type="radio" value="남성" name="gender" id="man" class="form-control radio"/><span class="radio-text">남성</span>
+            <input type="radio" value="여성" name="gender" id="women"class="form-control radio" style="margin-left: 20px;"/><span class="radio-text">여성</span>
+        </div>
+        <div class="form-box">
+            <input type="submit" class="form-control submit-button" value="정보수정">    
+        </div>
+
+    </form>   
+    <script>
+        var pwRule = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{6,}$/;
+       init();
+       function init(){
+            $('#category').val("{{user.category}}").attr("selected",true);
+            var birth_date = "{{user.birth_date|date:'Y-m-d'}}".split('-');
+            if (birth_date.length > 0) {
+                $("#birth_year").val(birth_date[0]);
+                $("#birth_mon").val(birth_date[1]);
+                $("#birth_day").val(birth_date[2]);
+            }
+            if("{{user.gender}}" == "1") $("#man").attr("checked",true);
+            else $("#women").attr("checked",true);
+       }
+       $("#pw").focusout(function(){
+            isPwCheck();
+       });
+       $("#pw2").focusout(function(){
+            isPwEquals();
+       });
+       function isPwCheck(){
+            if(!pwRule.test($("#pw").val())){
+                $("#pw_msg").css('color','red');
+                return false;
+            }else{
+                $("#pw_msg").text("사용가능 합니다.");
+                $("#pw_msg").css('color','green');
+                return true;
+            }
+        }
+        function isPwEquals(){
+            if($("#pw").val() != $("#pw2").val()){
+                $("#pw2_msg").css('display','block');
+                return false;
+            }else{
+                $("#pw2_msg").css('display','none');
+                return true;
+            }
+        }
+       function isVaild(){
+           if($("#pw").val() == "" && $("#pw2").val() == ""){
+                if(!isPwCheck()) return false;
+                if(!isPwEquals())return false;
+           }
+           return true;
+       }
+
+    </script> 
+</body>
+</html>

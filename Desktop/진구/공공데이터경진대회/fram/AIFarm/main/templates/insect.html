@@ -1,0 +1,91 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- jQuery UI CSS 파일 -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+    <style type="text/css">
+        a:link { color: black; text-decoration: none;}
+        a:visited { color: black; text-decoration: none;}
+        a:hover { color: black; text-decoration: underline;}
+    
+    </style>
+</head>
+<body style="text-align: center;">
+    <br><br>
+    <a href="{% url 'main:insect' %}"><h2><strong>병해충도감</strong></h2></a>
+    <br><br>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div>
+            <select name="type" style="font-size: xx-small;">
+                <option>병</option>
+                <option>해충</option>
+            </select>
+            <input type="text" id ="disease" name="disease" >
+            <button type="submit" class="show_data">검색</button>
+        </div>
+    </form>
+    <div style="text-align: center; font-size: xx-small;">
+        <br>
+        <table class="table" id=data_table>
+        <thead>
+            <tr>
+            <th scope="col">작물명</th>
+            <th scope="col">병명</th>
+            <th scope="col">영문명</th>
+            <th scope="col">대표사진</th>
+            </tr>
+        </thead>
+        {% for sick in data %}
+        <tbody id="data_div">
+            <tr>
+                <th scope="row">{{ sick.cropName }}</th>
+                <td><a class="goDetail" 
+                    href="/insect/detail/?id={{ sick.sickKey }}&sickName={{ sick.sickNameKor }}&crop={{ sick.cropName }}&search_type={{ sick.search_type }}" 
+                    id="{{ sick.sickKey }}" type="submit">{{ sick.sickNameKor }}</a></td>
+                <td>{{ sick.sickNameEng }}</td>
+                <td>
+                    <img src={{ sick.thumbImg }} width="120" height="80">
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
+<!-- <script>
+    $(document).ready(function(){
+        $(".goDetail").click(function(){
+            var click_id = $(this).attr('id');
+
+            console.log(click_id)
+
+            sickKey = {
+                'sickKey' : click_id
+            }
+            $.ajax({             
+                type: "POST",          
+                url: "/insect_2/detail/",
+                dataType: 'json',        
+                data: JSON.stringify(sickKey), 
+                success: function (data) { 
+                    console.log("complete");
+                    },         
+                error: function (e) {  
+                    console.log("ERROR : ", e);
+                    console.log(data);
+                }   
+            });  
+        });
+    });
+</script> -->

@@ -1,0 +1,226 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+
+    <style>
+        *{padding:0; margin:0;}
+        #tab-bar{
+            height: 45px;
+            list-style: none;
+            display: flex;
+            flex-direction: row;
+            line-height: 45px;
+            margin-top:3%;
+            
+        }
+        #tab-bar li{
+            width:30%;
+            text-align: center;
+            height: 100%;
+            border-top: 1px solid rgb(190, 190, 190);
+            border-bottom: 1px solid rgb(190, 190, 190);
+        }
+        #tab-bar > .active{
+            border-bottom:3px solid rgb(255, 86, 86);
+            color:rgb(255, 86, 86);
+        }
+        #ranking{
+            margin-top: 5%;
+        }
+        #ranking li{
+            height: 80px;
+            margin-top:20px;
+            display: flex;
+            flex-direction: row;
+            border-bottom: 1px solid rgb(190,190,190);
+
+        }
+        .rank-num{
+
+            width:18%;
+            text-align: center;
+            line-height: 60px;
+        }
+    
+        .rank-text{
+            width:100%;
+            margin-left: 3%;
+            margin-right:8%;
+        }
+        .rank-text-row{
+        
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-top:13px;
+            color:rgb(190,190,190);
+        }
+        #footer-header{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            border-bottom:1px solid rgb(190, 190, 190);
+            margin-bottom: 10px;
+        }
+        #footer-content{
+           height: 400px;
+        }
+        #write-btn{
+            position: fixed;
+            bottom:0px;
+            right:0px;
+            width:50px;
+            height: 50px;
+            margin-bottom: 5%;
+            margin-right: 5%;
+            border-radius: 50px;
+            text-align: center;
+            line-height: 57px;
+            background: #007bf9;
+            z-index: 999;
+        }
+        
+    </style>
+</head>
+<body>
+   <h4 style="margin-left: 3%; margin-top: 3%;">Best</h4>
+   <ul id="tab-bar">
+      <li class="tab-item" href="/main/all/" style="width:20%;">전체</li>
+      <li class="tab-item" href="/main/today/">오늘의 Best</li>
+      <li class="tab-item" href="/main/weekday/">주간 Best</li>
+      <li class="tab-item" href="/main/month/">월간 Best</li>
+   </ul>
+
+   <ul id="ranking">
+       {% for board in board_list %}
+        <li class="board-list" href="/readBoard/{{board.id}}/" pk="{{board.id}}">
+            <div class="rank-num">
+                {% if forloop.counter < 4%}
+                <p style="font-size:17px; color:rgb(255, 86, 86);font-weight:bold">
+                    {{forloop.counter}}
+                </p>
+                {% else %}
+                <p style="font-size:17px;font-weight:bold">
+                    {{forloop.counter}}
+                </p>
+                {% endif %}
+            </div>
+            {% if board.content|get_img_src %}
+            <div><img class="rank-img" src="{{board.content|get_img_src}}" width="60" height="60"></div>
+            {% endif %}
+            <div class="rank-text">
+                <p style="font-size: 17px;">{{board.title}}</p>
+                <div class="rank-text-row">
+                    <div>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-hand-thumbs-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16v-1c.563 0 .901-.272 1.066-.56a.865.865 0 0 0 .121-.416c0-.12-.035-.165-.04-.17l-.354-.354.353-.354c.202-.201.407-.511.505-.804.104-.312.043-.441-.005-.488l-.353-.354.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581 0-.211-.027-.414-.075-.581-.05-.174-.111-.273-.154-.315L12.793 9l.353-.354c.353-.352.373-.713.267-1.02-.122-.35-.396-.593-.571-.652-.653-.217-1.447-.224-2.11-.164a8.907 8.907 0 0 0-1.094.171l-.014.003-.003.001a.5.5 0 0 1-.595-.643 8.34 8.34 0 0 0 .145-4.726c-.03-.111-.128-.215-.288-.255l-.262-.065c-.306-.077-.642.156-.667.518-.075 1.082-.239 2.15-.482 2.85-.174.502-.603 1.268-1.238 1.977-.637.712-1.519 1.41-2.614 1.708-.394.108-.62.396-.62.65v4.002c0 .26.22.515.553.55 1.293.137 1.936.53 2.491.868l.04.025c.27.164.495.296.776.393.277.095.63.163 1.14.163h3.5v1H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                        </svg>
+                        <span>{{board.like_like}}</span>
+                    </div>
+                    <div>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar4" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>
+                          </svg>
+                        <span>{{board.datetime|date:'Y.m.d'}}</span>
+                    </div>
+                    <div>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chat-dots" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+                            <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                          </svg>                      
+                        <span>{{board|get_comment_cnt}}</span>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+   </ul>
+   <div id="write-btn">
+       <svg width="20px" height="20px" style="color: white;" viewBox="0 0 16 16" class="bi bi-pencil-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+      </svg>
+    </div>
+   <!-- <form id="form" style="display: none;" method="POST">
+        <input type="hidden" name="token" value="{{token}}">
+        
+   </form> -->
+   
+   <footer>
+        <div id="footer-header">
+            <h5 style="padding-left: 3%;">정보제공</h5>
+        </div>
+        
+        <div id="footer-content">
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                {% for info in info_list %}     
+                  {% if forloop.counter == 1%}
+                    <div class="carousel-item active poster-item" homepage_url="{{info.homepage_url}}">
+                        <img class="d-block w-100" height="200" src="/media/{{info.poster_img}}">
+                    </div>
+                  {% else %}
+                    <div class="carousel-item poster-item" homepage_url="{{info.homepage_url}}">
+                        <img class="d-block w-100" height="200" src="/media/{{info.poster_img}}">
+                    </div>
+                  {% endif %}
+                {% endfor %}
+                </div>
+              </div>
+        </div>
+   </footer>
+   <form style="display: none;" method="POST" id="reload-form">
+       <input type="hidden" value="{{token}}" name="token"/>
+   </form>
+
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   <script src="/static/js/carousel-swipe.js"></script>
+   <script>
+       $('.carousel').carousel({
+            interval: false,
+            
+        });
+        
+      ~~function (){
+            var li = $("#tab-bar").children()['{{active_index}}'];
+            $(li).addClass("active");
+            li = $("#ranking").children().last();
+            $(li).css({
+                "height":"109px",
+                "border-bottom":"12px solid rgb(230,230,230)"
+            });
+       }();
+       //포스터 사진 클릭시
+       $(".poster-item").click(function(){
+            var url = $(this).attr("homepage_url");
+            android.moveBrowser(url);
+       });
+
+       $(".tab-item").click(function(){
+            var url  = $(this).attr('href');
+            $("#reload-form").attr("action",url);
+            $("#reload-form").submit();
+       });
+       $(".board-list").click(function(){
+           var id = $(this).attr("pk");
+            android.moveReadBoard(id);
+       });
+
+       $("#write-btn").click(function(){
+            android.writeButtonClicked();
+       });
+       function finish(id){
+        $("#form").attr("action","/readBoard/"+id+"/");   
+        $("#form").submit();
+       }
+   </script>
+</body>
+</html>

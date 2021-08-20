@@ -1,0 +1,139 @@
+{% load extra %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!--부트스트랩-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        *{margin:0; padding:0;}
+        .ul{
+            list-style: none;
+        }
+       .li{
+           display: flex;
+           flex-direction: row;
+           margin:0 3%;
+       }
+       .text-box{
+           display: flex;
+           flex-direction: row;
+           justify-content: space-between;
+           color:rgb(190,190,190);
+           font-size: 12px;
+       }
+       .title{
+        font-size: 14px; 
+        color:black;
+        
+       }
+       #empty{
+            width:55%;
+            margin:48% auto;
+            color:rgb(190,190,190);
+        }
+       
+    </style>
+
+</head>
+<body>
+    {% if board_list|length > 0 %}
+    <h4 style="margin-left: 3%;">{{board.get_category_display}}</h4>
+    <hr>
+    <ul class="ul">
+        {% for board in board_list %}
+        <li class="li" pk="{{board.id}}">
+            <!--이미지-->
+            {% if board.content|get_img_src %}
+            <div><img  src="{{board.content|get_img_src}}" width="60" height="60"></div>
+            {% endif %}
+            <div style="width: 100%; margin-left: 3%;" class="title-box">
+                <div class="text-box">
+                    <p class="title">{{board.title}}</p>
+                    <p class="date" style="text-align: right;">{{board.datetime | date:'Y.m.d H:m' }}</p>
+                </div>    
+                <div class="text-box" style="margin-top:0px;">
+                    <!--좋아요수-->
+                    <p style="font-size: 14px;">
+                        <i class="glyphicon glyphicon-thumbs-up"></i>
+                       <span style="margin-left: 3px;">{{board.like_like}}</span>
+                    </p>
+                    <!--댓글수-->    
+                    <p style="font-size: 14px;">
+                        <i class="glyphicon glyphicon-comment"></i>
+                        <span style="margin-left: 3px;">{{board|get_comment_cnt}}</span>
+                    </p>
+                </div>
+            </div>
+        </li>
+        <hr>
+        {% endfor %}
+    </ul>  
+    <!--페이지 네이션-->
+    
+    {% if board_list.paginator.num_pages != 1  %}
+        <div style="text-align: center;">
+            <ul class="pagination">
+                {% if prev > 1%}
+                    <li>
+                        <a href="/boardList/?page={{prev}}&c_id={{board.category}}&token={{token}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% for i in page_range %}
+                {% if page == i %}
+                
+                    <li class="active"><a href="/boardList/?page={{i}}&c_id={{board.category}}&token={{token}}">{{i}} <span class="sr-only">(current)</span></a></li>
+                {% else %}
+                   <li><a href="/boardList/?page={{i}}&c_id={{board.category}}&token={{token}}">{{i}} <span class="sr-only">(current)</span></a></li>
+                {% endif %}
+        
+            {% endfor %}
+            {% if next < board_list.paginator.num_pages%}
+            <li>
+                <a href="/boardList/?page={{next}}&c_id={{board.category}}&token={{token}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            </ul>
+            
+        </div>  
+        {% endif %}    
+
+    <!--end-->
+    {% else %}
+        <h4 id="empty">게시글이 존재하지 않습니다.</h4>
+    {% endif %}
+    <form id="form" style="display: none;" method="POST">
+        <input type="hidden" name="token" value="{{token}}">
+   </form>
+    <script>
+       
+        init();
+        // 쪽지 내용이 overflow 되면 (내용...)
+        function init(){
+            var titleBox = $(".title-box")[0];
+            var date     = $(".date")[0];
+            var width  = $(titleBox).width() - $(date).width();
+            $(".title").css({
+                "width":width+"px",
+                "white-space": "nowrap",
+                "overflow"   : "hidden",
+                "text-overflow": "ellipsis"
+                });
+        }
+        $(".li").click(function(){
+            var id = $(this).attr("pk");
+            android.moveReadBoard(id);
+        });
+
+
+        
+    </script>
+</body>
+</html>
