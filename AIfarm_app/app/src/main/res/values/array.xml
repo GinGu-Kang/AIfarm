@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="category">
+        <item>카테고리</item>
+        <item>요식업</item>
+        <item>IT서비스</item>
+        <item>공예.목공</item>
+        <item>쇼핑몰</item>
+        <item>디자인</item>
+        <item>크리에이터</item>
+        <item>자유게시판</item>
+        <item>마케팅</item>
+        <item>매출</item>
+        <item>상권</item>
+        <item>인테리어</item>
+        <item>공모전</item>
+        <item>팀원모집</item>
+        <item>고민</item>
+    </string-array>
+</resources>
